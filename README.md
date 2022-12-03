@@ -35,3 +35,6 @@ directory:
 ├── Garage
 │   ├── cam_Garage_3-12.jpg
 ```
+
+# Notes
+You may need to install the `libgl1` package on your system for this script to work.

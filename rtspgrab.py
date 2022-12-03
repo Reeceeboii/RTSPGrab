@@ -27,7 +27,7 @@ def main(username: str, password: str, address: str, cameras: list[str]):
     for c in cameras:
         cap = cv2.VideoCapture(f"rtsp://{username}:{password}@{address}:554/cam/realmonitor?channel={c}&subtype=0")
 
-        # allow a short buffer period for to account for network latency
+        # allow a short buffer period to account for network latency
         sleep(2)
 
         filename = f"cam_{c}_{datetime.now().day}-{datetime.now().month}"

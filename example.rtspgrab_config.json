@@ -1,0 +1,6 @@
+{
+  "username": "camera_username",
+  "password": "camera_password123",
+  "camServerAddress": "cameras.domain.example",
+  "cameras": ["Garden", "Porch", "Garage"]
+}

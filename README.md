@@ -7,19 +7,14 @@ The script expects `username`, `password` and `cameras` variables to exist and b
 For each provided camera in `cameras`, the script will generate a nested folder inside the outer `RTSPGrab` folder in the user's home directory if one does not already exist. To that folder, a timestamped screengrab will be added for every subsequent execution.
 
 ## Config file:
+
 An example of the config file and its format:
+
 ```json
   {
-    # the username to access the remote camera(s)
     "username": "camera_username",
-
-    # the username to access the remote camera(s)
     "password": "camera_password123",
-
-    # the remote address of the camera server
     "camServerAddress": "cameras.domain.example"
-  
-    # A list of named cameras in whatever format your camera system uses
     "cameras": [
       "Garden",
       "Porch",

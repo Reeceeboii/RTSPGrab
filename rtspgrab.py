@@ -7,33 +7,81 @@ import cv2
 
 CONFIG_FILENAME = 'rtspgrab_config.json'
 
-def main(username: str, password: str, cams: list[str]):
-  pass
 
-# config that is ran before the main script is kicked off
-def pre_config():
-  rootFolderPath = os.path.join(os.path.expanduser('~'), 'RTSPGrab')
-  config = {}
+def main(username: str, password: str, address: str, cams: list[str]):
+    """
+    Main script function.
+    :param username:
+    :param password:
+    :param address:
+    :param cams:
+    :return:
+    """
+    root_folder_path = get_root_directory()
 
-  # make the root directory if it does not already exist
-  if(not os.path.isdir(rootFolderPath)):
-    os.mkdir(rootFolderPath)
+    cam_cap = cv2.VideoCapture(f"rtsp://{username}:{password}@{address}:554/cam/realmonitor?channel=1&subtype=0")
+    ret, img = cam_cap.read()
+    cv2.imwrite("./test.jpg", img)
 
-  # read the config into memory. Exit with error if it does not exist
-  if(os.path.isfile(f'.{os.sep}{CONFIG_FILENAME}')):
-    with open(f'.{os.sep}{CONFIG_FILENAME}', 'r') as f:
-      config = json.load(f)
-  else:
-    print(f'Could not find {CONFIG_FILENAME}. Exiting...')
-    sys.exit()
 
-  # check that output folder exists for each requested camera
-  if(len(config.cameras)):
-    for camera in config.cameras:
-      if(os.pa)
-  else:
-    print("No cameras found in config. Exiting...")
-  
+def pre_checks() -> tuple[str, str, str, list[str]]:
+    """
+    This function runs a set of checks that need to pass before the main script runs. These checks include verifying
+    that the correct folder structure exists, and that a username, password and camera server domain have been provided.
+
+    If all checks passed, the data read from the config is returned in a tuple of the form:
+        (username, password, camera address, cameras[])
+
+    :return: A tuple containing verified config data
+    """
+    root_folder_path = get_root_directory()
+    config = {}
+
+    # make the root directory if it does not already exist
+    if not os.path.isdir(root_folder_path):
+        os.mkdir(root_folder_path)
+
+    # read the config into memory. Exit with error if it does not exist
+    if os.path.isfile(f'.{os.sep}{CONFIG_FILENAME}'):
+        with open(f'.{os.sep}{CONFIG_FILENAME}', 'r') as f:
+            config = json.load(f)
+    else:
+        print(f'Could not find {CONFIG_FILENAME}. Exiting...')
+        sys.exit()
+
+    username = config['username']
+    password = config['password']
+    address = config['camServerAddress']
+    cameras = config['cameras']
+
+    # check that an output folder exists for each requested camera
+    if len(cameras):
+        for camera in cameras:
+            if not os.path.exists(os.path.join(root_folder_path, camera)):
+                print(f"Output folder for camera {camera} does not exist. Creating...")
+                os.mkdir(os.path.join(root_folder_path, camera))
+            else:
+                print(f"Output folder for camera {camera} exists. Skipping...")
+    else:
+        print("No cameras found in config. Exiting...")
+        sys.exit()
+
+    # check that a username, password and server address have been provided
+    if len(username) and len(password) and len(address):
+        return username, password, address, cameras
+    else:
+        print("Username, password or address not found in config. Exiting...")
+        sys.exit()
+
+
+def get_root_directory() -> str:
+    """
+    Gets the root directory for RTSBGrab to use to store its files
+    :return: The user's home dir (~) followed by a folder named "RTSPGrab"
+    """
+    return os.path.join(os.path.expanduser('~'), 'RTSPGrab')
+
+
 if __name__ == '__main__':
-  pre_config()
-  main()
+    """Entry point"""
+    main(*pre_checks())

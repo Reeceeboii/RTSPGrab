@@ -130,3 +130,6 @@ dmypy.json
 
 # testing config
 rtspgrab_config.json
+
+# test images
+*.jpg

@@ -4,24 +4,35 @@ import json
 import os
 import sys
 import cv2
+from time import sleep
+from datetime import datetime
 
 CONFIG_FILENAME = 'rtspgrab_config.json'
 
 
-def main(username: str, password: str, address: str, cams: list[str]):
+def main(username: str, password: str, address: str, cameras: list[str]):
     """
-    Main script function.
-    :param username:
-    :param password:
-    :param address:
-    :param cams:
-    :return:
+    Main script function. For each camera provided, this function takes a screenshot of the latest frame and saves
+    it as a timestamped file in the correspondingly named folder in the user's home directory. These files and the
+    named folders are nested inside the outer "RTSPGrab folder"
+
+    :param username: The username to access the cameras
+    :param password: The password to access the cameras
+    :param address: The address of the remote camera server
+    :param cameras: Array of camera names
+    :return: Nothing
     """
     root_folder_path = get_root_directory()
 
-    cam_cap = cv2.VideoCapture(f"rtsp://{username}:{password}@{address}:554/cam/realmonitor?channel=1&subtype=0")
-    ret, img = cam_cap.read()
-    cv2.imwrite("./test.jpg", img)
+    for c in cameras:
+        cap = cv2.VideoCapture(f"rtsp://{username}:{password}@{address}:554/cam/realmonitor?channel={c}&subtype=0")
+
+        # allow a short buffer period for to account for network latency
+        sleep(2)
+
+        filename = f"cam_{c}_{datetime.now().day}-{datetime.now().month}"
+        ret, img = cap.read()
+        cv2.imwrite(os.path.join(os.path.join(root_folder_path, c), f"{filename}.jpg"), img)
 
 
 def pre_checks() -> tuple[str, str, str, list[str]]:
@@ -29,7 +40,7 @@ def pre_checks() -> tuple[str, str, str, list[str]]:
     This function runs a set of checks that need to pass before the main script runs. These checks include verifying
     that the correct folder structure exists, and that a username, password and camera server domain have been provided.
 
-    If all checks passed, the data read from the config is returned in a tuple of the form:
+    If all checks pass, the data read from the config is returned in a tuple of the form:
         (username, password, camera address, cameras[])
 
     :return: A tuple containing verified config data

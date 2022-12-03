@@ -6,7 +6,7 @@ The script expects `username`, `password`, `camServerAddress` and `cameras` vari
 
 For each provided camera in `cameras`, the script will generate a nested folder inside the outer `RTSPGrab` folder in the user's home directory if one does not already exist. To that folder, a timestamped screengrab will be added for every subsequent execution.
 
-## Config file:
+## Config file and folder structure
 
 An example of the config file and its format:
 
@@ -21,4 +21,17 @@ An example of the config file and its format:
       "Garage"
     ]
   }
+```
+
+Running the script on the 3rd of December will result in the following folder structure being created in the user's home
+directory:
+
+```
+./RTSPGrab/
+├── Garden
+│   ├── cam_Garden_3-12.jpg
+├── Porch
+│   ├── cam_Porch_3-12.jpg
+├── Garage
+│   ├── cam_Garage_3-12.jpg
 ```
